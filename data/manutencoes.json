@@ -1,0 +1,26 @@
+[
+    {
+        "data": "2024-07-21",
+        "placa": "QSA-5503",
+        "informacoes": "os 150",
+        "mecanico": "tico",
+        "valor": "500",
+        "usuario_cadastro": "admin"
+    },
+    {
+        "data": "2024-07-21",
+        "placa": "SLC-3C98",
+        "informacoes": "os 130",
+        "mecanico": "moisess",
+        "valor": "500",
+        "usuario_cadastro": "admin"
+    },
+    {
+        "data": "2024-07-22",
+        "placa": "QSA-5503",
+        "informacoes": "dsa",
+        "mecanico": "55",
+        "valor": "554",
+        "usuario_cadastro": "admin"
+    }
+]

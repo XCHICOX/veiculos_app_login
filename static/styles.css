@@ -1,0 +1,278 @@
+/* Estilos Gerais */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
+}
+
+.header {
+    background-color: #323131;
+    color: white;
+    padding: 1px 0;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    text-transform: uppercase;
+}
+
+.footer {
+    background-color: #333;
+    color: white;
+    padding: 1px 0;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-transform: uppercase;
+}
+
+.main-content {
+    padding: 120px 20px 50px;
+    max-width: 2000px;
+    margin: auto;
+    font-size: 12px;
+}
+
+.container {
+    background: #aaa8a8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.username {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    font-weight: bold;
+    color: #08b1ff;
+    z-index: 1001;
+    text-transform: uppercase;
+}
+
+h2, h3 {
+    color: #333;
+    text-transform: uppercase;
+}
+
+.form-container {
+    margin-top: 20px;
+}
+
+.form-container form {
+    margin-top: 20px;
+}
+
+.form-container form input {
+    width: calc(15% - 12px); /* Ajusta a largura para compensar o padding */
+    padding: 4px; /* Diminui o padding */
+    margin-bottom: 8px;
+    border: 2px solid #008cff; /* Diminui a espessura da borda */
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-size: 12px; /* Diminui o tamanho da fonte */
+}
+
+.form-container form button {
+    background-color: #007bff;
+    color: rgb(255, 255, 255);
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.form-container form button:hover {
+    background-color: #010d19;
+}
+
+.search-container {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.search-container input {
+    padding: 8px;
+    border: 4px solid #00b3ff;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+.search-container button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.search-container button:hover {
+    background-color: #0056b3;
+}
+
+
+.search-container .search-date {
+    width: 150px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+.actions {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.actions button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.actions button.edit-button {
+    background-color: #007bff;
+}
+
+.actions button.edit-button:hover {
+    background-color: #010d19;
+}
+
+.actions button.delete-button {
+    background-color: #dc3545;
+}
+
+.actions button.delete-button:hover {
+    background-color: #010d19;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.button-group .adicionar-manutencao-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.button-group .adicionar-manutencao-button:hover {
+    background-color: #010d19;
+}
+
+.button-group .back-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.button-group .back-button:hover {
+    background-color: #151515;
+    color: #ffffff;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+.total-container {
+    margin-top: 20px;
+    font-weight: bold;
+    text-align: right;
+}
+.flash-messages {
+    position: absolute; /* Fixa a posição em relação ao corpo */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%); /* Centraliza horizontalmente */
+    width: 90%; /* Define a largura como porcentagem da largura da janela */
+    max-width: 600px; /* Define uma largura máxima */
+    z-index: 1000; /* Garante que fique sobre outros elementos */
+    margin: 150px 0; /* Espaço acima e abaixo */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.flash {
+    padding: 10px; /* Ajusta o padding para o tamanho da mensagem */
+    border-radius: 5px;
+    margin-bottom: 10px; /* Espaço entre mensagens */
+    color: #000000;
+    font-weight: bold;
+    
+}
+
+

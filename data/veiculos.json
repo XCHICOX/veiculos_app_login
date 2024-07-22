@@ -1,0 +1,38 @@
+[
+    {
+        "placa": "SLC-3C98",
+        "modelo": "VIRTUS",
+        "ano": "2024",
+        "usuario_cadastro": "admin"
+    },
+    {
+        "placa": "QSA-5502",
+        "modelo": "KWID",
+        "ano": "2024",
+        "usuario_cadastro": "admin"
+    },
+    {
+        "placa": "QXA-1F85",
+        "modelo": "CORSAA",
+        "ano": "2020",
+        "usuario_cadastro": "admin"
+    },
+    {
+        "placa": "AAA-1234",
+        "modelo": "CORSAA",
+        "ano": "2020",
+        "usuario_cadastro": "admin"
+    },
+    {
+        "placa": "QXA-1F84",
+        "modelo": "CORSAA",
+        "ano": "2018",
+        "usuario_cadastro": "admin"
+    },
+    {
+        "placa": "QSA-5503",
+        "modelo": "KWID",
+        "ano": "2022",
+        "usuario_cadastro": "admin"
+    }
+]

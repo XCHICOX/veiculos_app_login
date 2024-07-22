@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manutenções</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+
+<body>
+    <!-- Exibir mensagens de flash -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="header">
+        <h1>Manutenções</h1>
+        <div class="username">Olá, {{ logged_in_user }}</div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+
+            <!-- Seção de busca -->
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Buscar...">
+                <input type="date" id="searchStartDate" class="search-date" placeholder="Data Início">
+                <input type="date" id="searchEndDate" class="search-date" placeholder="Data Fim">
+            </div>
+
+            <!-- Tabela de manutenções -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Placa</th>
+                            <th>Informações</th>
+                            <th>Mecânico</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manutencaoTable">
+                        {% for manutencao in manutencoes %}
+                        <tr>
+                            <td>{{ manutencao.data }}</td>
+                            <td>{{ manutencao.placa }}</td>
+                            <td>{{ manutencao.informacoes }}</td>
+                            <td>{{ manutencao.mecanico }}</td>
+                            <td>{{ manutencao.valor }}</td>
+                            <td class="actions">
+                                <button class="edit-button"
+                                    onclick="openModal('{{ manutencao.data }}', '{{ manutencao.placa }}', '{{ manutencao.informacoes }}', '{{ manutencao.mecanico }}', '{{ manutencao.valor }}', '{{ loop.index0 }}')">Editar</button>
+                                <form action="{{ url_for('excluir_manutencao') }}" method="POST"
+                                    style="display:inline;">
+                                    <input type="hidden" name="index" value="{{ loop.index0 }}">
+                                    <button type="submit" class="delete-button"
+                                        onclick="return confirm('Tem certeza que deseja excluir esta manutenção?')">Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="total-container">
+                Total: <span id="totalValue">R$ 0,00</span>
+            </div>
+
+            <!-- Seção de adicionar manutenção -->
+            <div class="form-container">
+                <h3 id="formTitle">Adicionar Manutenção</h3>
+                <form id="adicionarManutencaoForm" action="{{ url_for('adicionar_manutencao') }}" method="post"
+                    onsubmit="return confirmarAdicao()">
+                    <input type="date" id="data" name="data" placeholder="Data" required>
+                    <input type="text" id="placa" name="placa" placeholder="AAA-1234" required maxlength="8"
+                        oninput="formatPlaca(this)">
+                    <input type="text" id="informacoes" name="informacoes" placeholder="Informações" required>
+                    <input type="text" id="mecanico" name="mecanico" placeholder="Mecânico" required>
+                    <input type="number" id="valor" name="valor" placeholder="Valor" required>
+                    <div class="button-group">
+                        <button type="submit" id="submitButton" class="adicionar-manutencao-button">Adicionar</button>
+                        <a href="{{ url_for('home') }}" class="back-button">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de edição -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>Editar Manutenção</h3>
+                <form id="editForm" action="{{ url_for('editar_manutencao') }}" method="POST">
+                    <input type="hidden" name="index" id="modalIndex">
+                    <input type="date" name="data" id="modalData" required>
+                    <input type="text" name="placa" id="modalPlaca" required maxlength="8" oninput="formatPlaca(this)">
+                    <input type="text" name="informacoes" id="modalInformacoes" required>
+                    <input type="text" name="mecanico" id="modalMecanico" required>
+                    <input type="number" name="valor" id="modalValor" required>
+                    <button type="submit" class="edit-button">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 Seu Nome ou Empresa</p>
+    </div>
+
+    <script>
+        function formatPlaca(input) {
+            var value = input.value.replace(/[^A-Z0-9]/gi, '');
+            if (value.length > 7) {
+                value = value.slice(0, 3) + '-' + value.slice(3, 7);
+            } else {
+                value = value.slice(0, 3) + '-' + value.slice(3);
+            }
+            input.value = value.toUpperCase(); // Limita o comprimento máximo
+        }
+
+        function openModal(data, placa, informacoes, mecanico, valor, index) {
+            document.getElementById('modalData').value = data;
+            document.getElementById('modalPlaca').value = placa;
+            document.getElementById('modalInformacoes').value = informacoes;
+            document.getElementById('modalMecanico').value = mecanico;
+            document.getElementById('modalValor').value = valor;
+            document.getElementById('modalIndex').value = index;
+            document.getElementById('editModal').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('editModal')) {
+                closeModal();
+            }
+        }
+
+        function confirmarAdicao() {
+            if (document.getElementById('submitButton').textContent === 'Salvar') {
+                return confirm('Tem certeza que deseja salvar as alterações desta manutenção?');
+            }
+            return true;
+        }
+
+        function filterTable() {
+            var textFilter = document.getElementById('searchInput').value.toLowerCase();
+            var startDateInput = document.getElementById('searchStartDate').value;
+            var endDateInput = document.getElementById('searchEndDate').value;
+            var startDate = startDateInput ? new Date(startDateInput) : null;
+            var endDate = endDateInput ? new Date(endDateInput) : null;
+            var rows = document.querySelectorAll('#manutencaoTable tr');
+            var totalValue = 0;
+
+            rows.forEach(function (row) {
+                var cells = row.getElementsByTagName('td');
+                var dateText = cells[0].textContent.trim();
+                var date = new Date(dateText);
+                var text = row.textContent.toLowerCase();
+                var textMatch = text.includes(textFilter);
+                var dateMatch = (!startDate || !endDate) || (date >= startDate && date <= endDate);
+
+                if (textMatch && dateMatch) {
+                    row.style.display = '';
+                    totalValue += parseFloat(cells[4].textContent.replace('R$', '').replace(',', '.')) || 0;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('totalValue').textContent = 'R$ ' + totalValue.toFixed(2).replace('.', ',');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterTable);
+        document.getElementById('searchStartDate').addEventListener('input', filterTable);
+        document.getElementById('searchEndDate').addEventListener('input', filterTable);
+
+        // Calcular o total inicialmente
+        filterTable();
+    </script>
+</body>
+
+</html>

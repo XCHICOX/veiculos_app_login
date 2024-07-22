@@ -1,0 +1,179 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veiculos</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+
+<body>
+    <!-- Exibir mensagens de flash -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Cabeçalho -->
+    <div class="header">
+        <h1>Veículos</h1>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Mostra o nome de usuário logado no canto superior direito -->
+            <p class="username">
+                {% if logged_in_user %}
+                Olá: {{ logged_in_user }}
+                {% else %}
+                Nenhum usuário logado
+                {% endif %}
+            </p>
+
+            <h2>Veículos</h2>
+
+            <!-- Seção de busca de veículos -->
+            <div class="search-container">
+                <input type="text" id="searchTerm" placeholder="Buscar veículo" oninput="formatarPlaca(this)">
+                <button onclick="buscarVeiculo()">Buscar</button>
+            </div>
+
+            <!-- Seção de listagem de veículos com rolagem -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Placa</th>
+                            <th>Modelo</th>
+                            <th>Ano</th>
+                            <th>Usuário</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="veiculosTableBody">
+                        {% for veiculo in veiculos[:5] %}
+                        <tr>
+                            <td>{{ veiculo.placa }}</td>
+                            <td>{{ veiculo.modelo }}</td>
+                            <td>{{ veiculo.ano }}</td>
+                            <td>{{ veiculo.usuario_cadastro }}</td>
+                            <td class="actions">
+                                <button class="edit-button"
+                                    onclick="editarVeiculo('{{ veiculo.placa }}', '{{ veiculo.modelo }}', '{{ veiculo.ano }}')">Editar</button>
+                                <form action="{{ url_for('excluir_veiculo') }}" method="post" style="display: inline;"
+                                    onsubmit="return confirmarExclusao()">
+                                    <input type="hidden" name="placa" value="{{ veiculo.placa }}">
+                                    <button type="submit" class="delete-button">Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Seção de adicionar/editar veículo -->
+            <div class="form-container">
+                <h3 id="formTitle">Adicionar Veículo</h3>
+                <form id="veiculoForm" action="{{ url_for('adicionar_veiculo') }}" method="post">
+                    <input type="hidden" id="editPlaca" name="editPlaca">
+                    <input type="text" id="placa" name="placa" placeholder="Placa (AAA-1234)" required
+                        oninput="formatarPlaca(this)">
+                    <input type="text" id="modelo" name="modelo" placeholder="Modelo" required
+                        oninput="converterParaMaiusculo(this)">
+                    <input type="text" id="ano" name="ano" placeholder="Ano" required
+                        oninput="converterParaMaiusculo(this)">
+                    <div class="button-group">
+                        <button type="submit" class="adicionar-veiculo-button" id="submitButton">Adicionar</button>
+                        <a href="{{ url_for('home') }}" class="back-button">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="footer">
+        <p>&copy; 2024 Seu Nome ou Empresa</p>
+    </div>
+
+    <script>
+        function buscarVeiculo() {
+            const term = document.getElementById('searchTerm').value;
+            fetch(`/buscar_veiculo?term=${term}`)
+                .then(response => response.json())
+                .then(data => {
+                    const veiculos = data.veiculos;
+                    const tableBody = document.getElementById('veiculosTableBody');
+                    tableBody.innerHTML = '';
+                    veiculos.forEach(veiculo => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${veiculo.placa}</td>
+                            <td>${veiculo.modelo}</td>
+                            <td>${veiculo.ano}</td>
+                            <td>${veiculo.usuario_cadastro}</td>
+                            <td class="actions">
+                                <button class="edit-button" onclick="editarVeiculo('${veiculo.placa}', '${veiculo.modelo}', '${veiculo.ano}')">Editar</button>
+                                <form action="{{ url_for('excluir_veiculo') }}" method="post" style="display: inline;" onsubmit="return confirmarExclusao()">
+                                    <input type="hidden" name="placa" value="${veiculo.placa}">
+                                    <button type="submit" class="delete-button">Excluir</button>
+                                </form>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                });
+        }
+
+        function formatarPlaca(input) {
+            let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (value.length > 3) {
+                value = value.slice(0, 3) + '-' + value.slice(3);
+            }
+            input.value = value;
+        }
+
+        function converterParaMaiusculo(input) {
+            input.value = input.value.toUpperCase();
+        }
+
+        function confirmarExclusao() {
+            return confirm('Você tem certeza que deseja excluir este veículo?');
+        }
+
+        function editarVeiculo(placa, modelo, ano) {
+            document.getElementById('formTitle').innerText = 'Editar Veículo';
+            document.getElementById('veiculoForm').action = "{{ url_for('editar_veiculo') }}";
+            document.getElementById('editPlaca').value = placa;
+            document.getElementById('placa').value = placa;
+            document.getElementById('modelo').value = modelo;
+            document.getElementById('ano').value = ano;
+            document.getElementById('submitButton').innerText = 'Salvar Alterações';
+        }
+
+        document.querySelectorAll('#placa, #modelo, #ano, #searchTerm').forEach(input => {
+            input.addEventListener('input', function () {
+                if (input.id === 'placa' || input.id === 'searchTerm') {
+                    formatarPlaca(input);
+                } else {
+                    converterParaMaiusculo(input);
+                }
+            });
+        });
+    </script>
+</body>
+<br><br><br><br>
+
+</html>
+{% endblock %}

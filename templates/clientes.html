@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Exibir mensagens de flash -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Cabeçalho -->
+    <div class="header">
+        <h1>Clientes</h1>
+        <div class="username">Olá, {{ logged_in_user }}</div>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div class="main-content">
+        <div class="container">
+            <div class="search-container">
+                <input type="text" id="searchTerm" placeholder="Buscar cliente">
+                <button onclick="buscarCliente()">Buscar</button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>RG</th>
+                            <th>Endereço</th>
+                            <th>Telefone</th>
+                            <th>WhatsApp</th>
+                            <th>Usuário</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientesTableBody">
+                        {% for cliente in clientes[:5] %}
+                        <tr>
+                            <td>{{ cliente.nome }}</td>
+                            <td>{{ cliente.rg }}</td>
+                            <td>{{ cliente.endereco }}</td>
+                            <td>{{ cliente.telefone }}</td>
+                            <td>{{ cliente.whatsapp }}</td>
+                            <td>{{ cliente.usuario_cadastro }}</td>
+                            <td class="actions">
+                                <button class="edit-button"
+                                    onclick="editarCliente('{{ cliente.rg }}', '{{ cliente.nome }}', '{{ cliente.endereco }}', '{{ cliente.telefone }}', '{{ cliente.whatsapp }}')">Editar</button>
+                                <form action="{{ url_for('excluir_cliente') }}" method="post" style="display: inline;" onsubmit="return confirmarExclusao()">
+                                    <input type="hidden" name="rg" value="{{ cliente.rg }}">
+                                    <button type="submit" class="delete-button">Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-container">
+                <h3 id="formTitle">Adicionar Cliente</h3>
+                <form id="adicionarClienteForm" action="{{ url_for('adicionar_cliente') }}" method="post" onsubmit="return confirmarAdicao()">
+                    <input type="text" id="nome" name="nome" placeholder="Nome" required>
+                    <input type="text" id="rg" name="rg" placeholder="RG" required>
+                    <input type="text" id="endereco" name="endereco" placeholder="Endereço" required>
+                    <input type="text" id="telefone" name="telefone" placeholder="Telefone" required>
+                    <input type="text" id="whatsapp" name="whatsapp" placeholder="WhatsApp" required>
+                    <div class="button-group">
+                        <button type="submit" id="submitButton" class="adicionar-cliente-button">Adicionar</button>
+                        <a href="{{ url_for('home') }}" class="back-button">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="footer">
+        <p>&copy; 2024 Seu Nome ou Empresa</p>
+    </div>
+
+    <script>
+        function buscarCliente() {
+            const term = document.getElementById('searchTerm').value;
+            fetch(`/buscar_cliente?term=${term}`)
+                .then(response => response.json())
+                .then(data => {
+                    const clientes = data.clientes.slice(0, 15);
+                    const tableBody = document.getElementById('clientesTableBody');
+                    tableBody.innerHTML = '';
+                    clientes.forEach(cliente => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${cliente.nome}</td>
+                            <td>${cliente.rg}</td>
+                            <td>${cliente.endereco}</td>
+                            <td>${cliente.telefone}</td>
+                            <td>${cliente.whatsapp}</td>
+                            <td>${cliente.usuario_cadastro}</td>
+                            <td class="actions">
+                                <button class="edit-button" onclick="editarCliente('${cliente.rg}', '${cliente.nome}', '${cliente.endereco}', '${cliente.telefone}', '${cliente.whatsapp}')">Editar</button>
+                                <form action="{{ url_for('excluir_cliente') }}" method="post" style="display: inline;" onsubmit="return confirmarExclusao()">
+                                    <input type="hidden" name="rg" value="${cliente.rg}">
+                                    <button type="submit" class="delete-button">Excluir</button>
+                                </form>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Erro ao buscar clientes:', error));
+        }
+
+        function editarCliente(rg, nome, endereco, telefone, whatsapp) {
+            document.getElementById('formTitle').textContent = 'Editar Cliente';
+            document.getElementById('rg').value = rg;
+            document.getElementById('nome').value = nome;
+            document.getElementById('endereco').value = endereco;
+            document.getElementById('telefone').value = telefone;
+            document.getElementById('whatsapp').value = whatsapp;
+            document.getElementById('submitButton').textContent = 'Salvar';
+            document.getElementById('adicionarClienteForm').action = "{{ url_for('editar_cliente') }}"; // Ajusta a URL para editar
+        }
+
+        function confirmarExclusao() {
+            return confirm('Tem certeza que deseja excluir este cliente?');
+        }
+
+        function confirmarAdicao() {
+            if (document.getElementById('submitButton').textContent === 'Salvar') {
+                return confirm('Tem certeza que deseja salvar as alterações deste cliente?');
+            }
+            return true;
+        }
+
+        function limparFormulario() {
+            document.getElementById('formTitle').textContent = 'Adicionar Cliente';
+            document.getElementById('rg').value = '';
+            document.getElementById('nome').value = '';
+            document.getElementById('endereco').value = '';
+            document.getElementById('telefone').value = '';
+            document.getElementById('whatsapp').value = '';
+            document.getElementById('submitButton').textContent = 'Adicionar';
+            document.getElementById('adicionarClienteForm').action = "{{ url_for('adicionar_cliente') }}"; // Ajusta a URL para adicionar
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('adicionarClienteForm').addEventListener('submit', function (e) {
+                if (document.getElementById('submitButton').textContent === 'Salvar') {
+                    if (!confirmarAdicao()) {
+                        e.preventDefault();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

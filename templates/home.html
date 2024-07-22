@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial</title>
+    <style>
+        /* Estilo do corpo da página */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #fff; /* Cor padrão do texto para garantir visibilidade sobre o fundo */
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('{{ url_for('static', filename='imagens/fundo3.gif') }}'); /* Caminho para a imagem de fundo */
+            background-size: 100% 100%; /* Ajusta o tamanho da imagem para 100% da largura e altura */
+            background-position: center 80%; /* Centraliza a imagem horizontalmente e move-a para baixo */
+            background-repeat: no-repeat; /* Impede a repetição da imagem */
+            opacity: 0.7; /* Define a opacidade da imagem */
+            z-index: -1; /* Garante que a imagem fique atrás do conteúdo */
+        }
+
+        /* Estilo do cabeçalho */
+        .header {
+            background-color: rgba(51, 51, 51, 0.8); /* Cor de fundo com transparência */
+            color: rgb(0, 191, 255);
+            padding: 5px 20px; /* Ajuste o padding conforme necessário */
+            text-align: left; /* Alinha o conteúdo à esquerda */
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex; /* Adiciona Flexbox */
+            align-items: center; /* Alinha verticalmente os itens do cabeçalho */
+            gap: 20px; /* Espaço entre o logo e o nome da página */
+        }
+
+        .header img {
+            height: 150px; /* Ajuste o tamanho da logomarca conforme necessário */
+            vertical-align: middle;
+            margin-right: 700px; /* Ajuste o valor para mover a imagem mais à esquerda */
+        }
+
+        .header h1 {
+            margin: 0; /* Remove a margem padrão do <h1> */
+            font-size: 24px; /* Ajuste o tamanho da fonte conforme necessário */
+        }
+
+        /* Estilo do rodapé */
+        .footer {
+            background-color: rgba(51, 51, 51, 0.8); /* Cor de fundo com transparência */
+            color: rgb(0, 179, 255);
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Estilo do conteúdo */
+        .content {
+            padding-top: 60px; /* Espaço para o cabeçalho */
+            padding-bottom: 50px; /* Espaço para o rodapé */
+            display: flex;
+            justify-content: center; /* Centraliza horizontalmente */
+            align-items: center; /* Centraliza verticalmente */
+            height: calc(100vh - 110px); /* Ajusta a altura para ocupar a tela menos cabeçalho e rodapé */
+            text-align: center; /* Alinha o texto no centro */
+        }
+
+        /* Estilo do nome de usuário */
+        .username {
+            position: fixed; /* Mudei para fixed para manter a posição mesmo com rolagem */
+            top: 10px;
+            right: 20px;
+            font-weight: bold;
+            color: #007bff; /* Garantir que o texto seja visível sobre o fundo escuro */
+            z-index: 1001; /* Assegura que o texto esteja acima dos outros elementos */
+        }
+
+        .logout-button {
+            position: fixed; /* Usar fixed para posicionar em relação à janela */
+            bottom: 80px; /* Distância do fundo */
+            right: 20px; /* Distância da borda direita */
+            background-color: #f44336; /* Cor vermelha para destacar */
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold; /* Adiciona negrito ao texto */
+            border-radius: 8px;
+            cursor: pointer;
+            color: #fff; /* Cor do texto do botão */
+        }
+
+        /* Estilo do container dos ícones */
+        .home-container {
+            display: flex;
+            justify-content: center; /* Centraliza horizontalmente */
+            align-items: center; /* Alinha verticalmente */
+            gap: 150px; /* Espaçamento entre os ícones (ajustável) */
+        }
+
+        .card {
+            text-align: center;
+        }
+
+        .card img {
+            width: 120px; /* Ajuste o tamanho dos ícones conforme necessário */
+            height: 120px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .card h2 {
+            margin-top: 10px;
+            font-size: 25px; /* Ajuste o tamanho da fonte conforme necessário */
+            color: #030303;
+            font-weight: bold;
+        }
+
+        /* Estilo dos links dentro das cards */
+        .card-link {
+            color: rgb(16, 16, 16); /* Cor do texto do link */
+            text-decoration: none; /* Remove o sublinhado dos links */
+        }
+
+        .card-link:hover {
+            color: #f00; /* Cor do texto do link ao passar o mouse */
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <div class="header">
+        <img src="{{ url_for('static', filename='imagens/fundo2.gif') }}" alt="Logomarca"> <!-- Caminho para a logomarca -->
+        <h1>Página Inicial</h1>
+    </div>
+
+    <!-- Mostra o nome de usuário logado no canto superior direito -->
+    <p class="username">
+        {% if logged_in_user %}
+            Usuário logado: {{ logged_in_user }}
+        {% else %}
+            Nenhum usuário logado
+        {% endif %}
+    </p>
+
+    {% if logged_in_user %}
+        <form action="{{ url_for('logout') }}" method="post" style="display: inline;">
+            <button type="submit" class="logout-button">Sair</button>
+        </form>
+    {% endif %}
+
+    <!-- Conteúdo da página -->
+    <div class="content">
+        <div class="home-container">
+            <div class="card">
+                <a href="{{ url_for('clientes') }}" class="card-link">
+                    <img src="{{ url_for('static', filename='icons/adicionar_cliente.png') }}" alt="Clientes">
+                    <h2>Clientes</h2>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('veiculos') }}" class="card-link">
+                    <img src="{{ url_for('static', filename='icons/adicionar_veiculo.png') }}" alt="Veículos">
+                    <h2>Veículos</h2>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('manutencoes') }}" class="card-link">
+                    <img src="{{ url_for('static', filename='icons/adicionar_manutencao.png') }}" alt="Manutenções">
+                    <h2>Manutenções</h2>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Rodapé -->
+    <div class="footer">
+        <p>&copy; 2024 Seu Nome ou Empresa</p>
+    </div>
+</body>
+</html>
